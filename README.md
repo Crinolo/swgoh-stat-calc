@@ -8,7 +8,6 @@ Accepted data formats are those found in [swgoh.help's API](http://api.swgoh.hel
 ```js
 const statCalculator = require('statCalculator.js');
 statCalculator.setGameData( gameData );
-statCalculator.setMaxValues( 85, 12, 6);
 ```
 
 ## Methods ##
