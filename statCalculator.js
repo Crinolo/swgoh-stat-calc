@@ -3,7 +3,6 @@ let unitData,  // global variables containing properly formatted game data.
     gearData,
     crTables,
     relicData;
-    // maxValues;
 
 module.exports = {
   setGameData: (gameData) => {
@@ -13,15 +12,6 @@ module.exports = {
     crTables = gameData.crTables;
     relicData = gameData.relicData;
   },
-  // setMaxValues: (level, gear, modRarity, rarity = 7, modLevel = 15) => { // I don't expect max rarity or max mod level to ever change, so only those have default values
-  //   maxValues = {
-  //     rarity: rarity,
-  //     level: level,
-  //     gear: gear,
-  //     modRarity: modRarity,
-  //     modLevel: modLevel
-  //   };
-  // },
   calcCharStats: calcCharStats,
   calcShipStats: calcShipStats,
   calcRosterStats: calcRosterStats,
@@ -180,13 +170,7 @@ function getCrewRating(crew) {
   return totalCR;// * crTables.crewSizeFactor[ crew.length ];
 }
 function getSkillCrewRating(skill) {
-  // if (skill.id.substring(0,8) == "contract") // it seems the CR from contract abilities is the same as regular abilities
-  //   return crTables.abilitySpecialCR.contract[ skill.tier ];
-  // if (skill.id.substring(0,8) == "hardware") // shouldn't exist for crew members' abilities, but here anyway
-  //   return crTables.abilitySpecialCR.hardware[ skill.tier ];
-  // if (skill.isZeta && skill.tier == 8) // zeta's actually give the same CR as omegas
-  //   return crTables.abilitySpecialCR.zeta;
-  
+  // Crew Rating for GP purposes depends on skill type (i.e. contract/hardware/etc.), but for stats it apparently doesn't.
   return crTables.abilityLevelCR[ skill.tier ];
 }
 
@@ -513,13 +497,13 @@ function floor(value, digits = 0) {
   return Math.floor(value / ('1e'+digits)) * ('1e'+digits);
 }
 
+
 // convert def
 function convertFlatDefToPercent(value, level = 85, scale = 1, isShip = false) {
   const val = value / scale;
   const level_effect = isShip ? 300 + level*5 : level*7.5;
   return (val/(level_effect + val)) * scale;//.toFixed(2);
 }
-
 
 // convert crit
 function convertFlatCritToPercent(value, scale = 1) {
@@ -570,6 +554,7 @@ function useValuesChar(char, useValues) {
   return unit;
 }
 
+// build ship/crew from 'useValues' option
 function useValuesShip(ship, crew, useValues) {
   if (!useValues) return {ship: ship, crew: crew};
   
