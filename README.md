@@ -13,7 +13,7 @@ statCalculator.setMaxValues( 85, 12, 6);
 
 ## Methods ##
 
-Examples below make use of the [api-swgoh-help](https://github.com/r3volved/api-swgoh-help/tree/node) package (loaded in to variable `swapi`) to collect the data.
+Examples below make use of the [api-swgoh-help](https://github.com/r3volved/api-swgoh-help/tree/node) package (loaded in to variable `swapi`) to collect the raw data.
 See it's documentation to learn more about how to use it to gather this data.
 
 ### .setGameData(gameData) ###
@@ -26,9 +26,9 @@ Can also be used later to update / reassign the game data, if an update is detec
 
 `gameData` *Object*\
 The Obect used by the Stat Calculator to read raw game data.  It requires a specific format.
-An example JSON file of the proper `gameData` object can be found [here](https://crinolo-swgoh-beta.glitch.me/statCalc/gameData.json).
+An example JSON file of the proper `gameData` object can be found [here](https://swgoh-stat-calc.glitch.me/gameData.json).
 That link should remain active and updated, and thus can be used directly to create the data object.
-To create the object from [swgoh.help's](http://api.swgoh.help) `/data` endpoint, see the code in [dataBuilder.js](https://glitch.com/edit/#!/crinolo-swgoh-beta?path=statCalc/dataBuilder.js)
+To create the object from [swgoh.help's](http://api.swgoh.help) `/data` endpoint, see the code in [dataBuilder.js](https://glitch.com/edit/#!/swgoh-stat-calc?path=statCalc/dataBuilder.js). (A separate package for this code will be created in the future, but for now, it's just hiding in there).
 
 #### Return Value ####
 
@@ -232,7 +232,7 @@ Any additional properties of the object will be ignored.\
 The *Default* explanations below are what is used when the related flag(s) are not used.
 
 #### Example: ####
-```json
+```js
 { gameStyle: true, unscaled: true }
 ```
 
@@ -246,7 +246,7 @@ Speeds up character calculations by ignoring stats from mods.\
 Overrides unit parameters with specific values.
 Object structure and total options are as defined below.
 Parameters provided here can be missing in the original unit.
-```json
+```js
 {
   char: { // used when calculating character stats
     rarity: 1-7,
@@ -329,8 +329,8 @@ Activates the `percentVals` flag above, and also changes the Stats Object to hav
 Tells the calculator to rename the stats using the submitted object.
 Used mostly for localization.
 *Object* must be such that `options.language[ statID ]` is the stat name, i.e. `{"1": "Health",...}`.\
-An example English localization can be seen [here](https://crinolo-swgoh-beta.glitch.me/statCalc/lang/eng_us.json).\
-Note that a large enough array will also work, as can be seen [here](https://crinolo-swgoh-beta.glitch.me/statCalc/lang/statEnum.json).
+An example English localization can be seen [here](https://swgoh-stat-calc.glitch.me/lang/eng_us.json).\
+Note that a large enough array will also work, as can be seen [here](https://swgoh-stat-calc.glitch.me/lang/statEnum.json).
 
 **Note on `language` keys:** The object/array for `options.language` does not need to be as complete as the above examples
 (which cover all 60 possible stats in game code).  Some statIDs that exist in game code are not used (such as id 59 - "UnitStat_Taunt"),
@@ -349,7 +349,7 @@ I.e. if the `language[6]` is `Physical Damage`, return object will use `physical
 Player profile object.  Contains a `.roster` property with an array of unit objects.
 
 **Full profile:**
-```json
+```js
 {
   roster: [
     {
@@ -404,7 +404,7 @@ Used directly by `.calcCharStats()` and `.calcShipStats()` (for both the ship an
 Object indexed by unit's base ID.  Each such property is an array of unit objects.
 
 **Full Object:**
-```json
+```js
 {
   <BaseID>: [
     {
