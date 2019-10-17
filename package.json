@@ -13,5 +13,13 @@
     "stat calculator"
   ],
   "author": "Crinolo",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Crinolo/swgoh-stat-calc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Crinolo/swgoh-stat-calc/issues"
+  },
+  "homepage": "https://github.com/Crinolo/swgoh-stat-calc#readme"
 }
