@@ -432,3 +432,8 @@ Relic levels are not available in this format, so stats granted by relics will n
 
 **Note:** [swgoh.help's](http://api.swgoh.help) `/roster` endpoint is an array of these objects.
 While that array is not directly accepted, each element in the array is a "Units" style object that is accepted as stated above.
+
+# Changelog #
+
+* Version 1.0.0
+  * Initial Release
