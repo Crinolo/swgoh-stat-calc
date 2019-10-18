@@ -5,14 +5,28 @@ Accepted data formats are those found in [swgoh.help's API](http://api.swgoh.hel
 
 ## Setup ##
 
+### Node.js ###
+
+#### Installation ####
+`npm install swgoh-stat-calc`
+
+#### Initialization ####
 ```js
-const statCalculator = require('statCalculator.js');
+const statCalculator = require('swgoh-stat-calc');
 statCalculator.setGameData( gameData );
+```
+
+### Raw JavaScript ###
+The `statCalculator.js` file is the complete calculator object, and has no dependencies on Node-specific packages.
+It can run just as well in any browser/system with at least ES6 compatibility.
+If used outside of npm, copy that file to a location your project can access, and adjust the `require()` parameter to point to that file, such as:
+```js
+const statCalculator = require('./statCalculator.js');
 ```
 
 ## Methods ##
 
-Examples below make use of the [api-swgoh-help](https://github.com/r3volved/api-swgoh-help/tree/node) package (loaded in to variable `swapi`) to collect the raw data.
+Examples below make use of the [api-swgoh-help](https://github.com/r3volved/api-swgoh-help/tree/node) package (loaded into variable `swapi`) to collect the raw data.
 See it's documentation to learn more about how to use it to gather this data.
 
 ### .setGameData(gameData) ###
@@ -27,11 +41,22 @@ Can also be used later to update / reassign the game data, if an update is detec
 The Obect used by the Stat Calculator to read raw game data.  It requires a specific format.
 An example JSON file of the proper `gameData` object can be found [here](https://swgoh-stat-calc.glitch.me/gameData.json).
 That link should remain active and updated, and thus can be used directly to create the data object.
-To create the object from [swgoh.help's](http://api.swgoh.help) `/data` endpoint, see the code in [dataBuilder.js](https://glitch.com/edit/#!/swgoh-stat-calc?path=statCalc/dataBuilder.js). (A separate package for this code will be created in the future, but for now, it's just hiding in there).
+To create the object from [swgoh.help's](http://api.swgoh.help) `/data` endpoint, see the code in [dataBuilder.js](https://glitch.com/edit/#!/swgoh-stat-calc?path=statCalc/dataBuilder.js). (A separate package for this code will be created in the future, but for now, it's just hiding in that project).
 
 #### Return Value ####
 
 None.
+
+#### Example ####
+
+```js
+// uses 'node-fetch' for the GET request to retrieve the gameData object
+const fetch = require('node-fetch');
+const statCalculator = require('swgoh-stat-calc');
+
+let gameData = await (await fetch('https://swgoh-stat-calc.glitch.me/gameData.json')).json();
+statCalculator.setGameData( gameData );
+```
 
 ### .calcCharStats(char [, flags, options] ) ###
 
@@ -230,7 +255,7 @@ The `options` parameter of all calculation methods is an object that can contain
 Any additional properties of the object will be ignored.\
 The *Default* explanations below are what is used when the related flag(s) are not used.
 
-#### Example: ####
+#### Example ####
 ```js
 { gameStyle: true, unscaled: true }
 ```
