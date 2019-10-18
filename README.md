@@ -460,5 +460,7 @@ While that array is not directly accepted, each element in the array is a "Units
 
 # Changelog #
 
+* Version 1.0.1
+  * 'Minor Text Fixes' to this README
 * Version 1.0.0
   * Initial Release
