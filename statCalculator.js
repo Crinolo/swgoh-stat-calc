@@ -117,6 +117,10 @@ function getCharRawStats(char) {
     }
   });
   if (char.relic && char.relic.currentTier > 2) {
+    // Added in to update the GP more or less correctly
+    const relicGP = [0, 759, 1594, 2505, 3492, 4554, 6072, 7969];
+    char.gp = char.gp + relicGP[char.relic.currentTier - 2];
+
     // calculate stats from relics
     let relic = relicData[ unitData[char.defId].relic[ char.relic.currentTier ] ];
     for (var statID in relic.stats) {
