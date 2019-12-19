@@ -624,11 +624,11 @@ function useValuesShip(ship, crew, useValues) {
   
   function setSkills( unitID, val ) {
     if (val == 'max')
-      return unitData[ unitID ].skills.map(skill => { return {tier: skill.maxTier}; });
+      return unitData[ unitID ].skills.map(skill => { return {id: skill.id, tier: skill.maxTier}; });
     else if (val == 'maxNoZeta')
-      return unitData[ unitID ].skills.map(skill => { return {tier: skill.maxTier - (skill.isZeta ? 1 : 0)}; });
+      return unitData[ unitID ].skills.map(skill => { return {id: skill.id, tier: skill.maxTier - (skill.isZeta ? 1 : 0)}; });
     else if ('number' == typeof val) // expecting an integer, 1-8, for skill level to use
-      return unitData[ unitID ].skills.map(skill => { return {tier: Math.min(val, skill.maxTier)}; });
+      return unitData[ unitID ].skills.map(skill => { return {id: skill.id, tier: Math.min(val, skill.maxTier)}; });
     else // expecting an array of skill objects
       return val;
   }
