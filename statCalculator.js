@@ -575,7 +575,8 @@ function useValuesShip(ship, crew, useValues) {
   ship = {
     defId: ship.defId,
     rarity: useValues.ship.rarity || ship.rarity,
-    level: useValues.ship.level || ship.level
+    level: useValues.ship.level || ship.level,
+    skills: setSkills(ship.defId, useValues.ship.skills || ship.skills)
   }
   
   let chars = unitData[ ship.defId ].crew.map( charID => {
@@ -586,7 +587,7 @@ function useValuesShip(ship, crew, useValues) {
       level: useValues.crew.level || char.level,
       gear: useValues.crew.gear || char.gear,
       equipped: char.gear,
-      skills: char.skills,
+      skills: setSkills(charID, useValues.crew.skills || char.skills),
       mods: char.mods,
       relic: useValues.crew.relic ? {currentTier: useValues.crew.relic } : char.relic
     };
@@ -609,14 +610,6 @@ function useValuesShip(ship, crew, useValues) {
         char.equipped.push({});
     }
     
-    if (useValues.crew.skills == "max") {
-      char.skills = unitData[ charID ].skills.map(skill => { return {tier: skill.maxTier}; });
-    } else if (useValues.crew.skills == "maxNoZeta") {
-      char.skills = unitData[ charID ].skills.map(skill => { return {tier: skill.maxTier - (skill.isZeta ? 1 : 0)}; });
-    } else if (useValues.crew.skills) { // expecting an integer, 1-8, for skill level to use
-      char.skills = unitData[ charID ].skills.map(skill => { return {tier: Math.min(useValues.crew.skills, skill.maxTier)}; }); // can't go higher than maxTier
-    }
-    
     if (useValues.crew.modRarity || useValues.crew.modLevel) {
       char.mods = [];
       for (let i=0; i<6; i++) {
@@ -628,4 +621,15 @@ function useValuesShip(ship, crew, useValues) {
   });
   
   return {ship: ship, crew: chars};
+  
+  function setSkills( unitID, val ) {
+    if (val == 'max')
+      return unitData[ unitID ].skills.map(skill => { return {tier: skill.maxTier}; });
+    else if (val == 'maxNoZeta')
+      return unitData[ unitID ].skills.map(skill => { return {tier: skill.maxTier - (skill.isZeta ? 1 : 0)}; });
+    else if ('number' == typeof val) // expecting an integer, 1-8, for skill level to use
+      return unitData[ unitID ].skills.map(skill => { return {tier: Math.min(val, skill.maxTier)}; });
+    else // expecting an array of skill objects
+      return val;
+  }
 }
