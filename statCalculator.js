@@ -182,6 +182,7 @@ function getCrewlessCrewRating(ship) {
   //     (Vulture Droid, Hyena Bomber, and BTL-B Y-wing)
   let cr = floor( crTables.crewRarityCR[ ship.rarity ] + 3.5*crTables.unitLevelCR[ ship.level ] + getCrewlessSkillsCrewRating( ship.skills ), 0);
   console.log(`Calculated Crew Rating of ${ship.defId} to be ${cr}`);
+  console.log(`Based on: rarity=${crTables.crewRarityCR[ ship.rarity ]}, lvl=${3.5*crTables.unitLevelCR[ ship.level ]}, skills=${getCrewlessSkillsCrewRating( ship.skills )}`);
   return cr;
 }
 function getCrewlessSkillsCrewRating(skills) {
