@@ -137,16 +137,17 @@ function getShipRawStats(ship, crew) {
       throw new Error(`Unit ${char.defId} is not in ${ship.defId}'s crew.`);
   });
   // if still here, crew is good -- go ahead and determine stats
-  const crewRating = getCrewRating(crew);
+  const crewRating = crew.length == 0 ? getCrewlessCrewRating(ship) : getCrewRating(crew);
   const stats = {
     base: Object.assign({}, unitData[ship.defId].stats),
     crew: {},
     growthModifiers: Object.assign({}, unitData[ship.defId].growthModifiers[ship.rarity] )
   };
+  let statMultiplier = crTables.shipRarityFactor[ship.rarity] * crewRating;
   Object.entries(unitData[ship.defId].crewStats).forEach( ([statID, statValue]) => {
     // stats 1-15 and 28 all have final integer values
     // other stats require decimals -- shrink to 8 digits of precision through 'unscaled' values this calculator uses
-    stats.crew[ statID ] = floor( statValue * crTables.shipRarityFactor[ship.rarity] * crewRating, (statID < 16 || statID == 28) ? 8 : 0);
+    stats.crew[ statID ] = floor( statValue * statMultiplier, (statID < 16 || statID == 28) ? 8 : 0);
   });
   return stats;
 }
@@ -154,9 +155,10 @@ function getShipRawStats(ship, crew) {
 function getCrewRating(crew) {
   let totalCR = crew.reduce( (crewRating, char) => {
     crewRating += crTables.unitLevelCR[ char.level ] + crTables.crewRarityCR[ char.rarity ]; // add CR from level/rarity
-    for ( let gearLvl = 1; gearLvl < char.gear; gearLvl++ ) {
-      crewRating += crTables.gearPieceCR[ gearLvl ] * 6; // add CR from complete gear levels
-    }
+    // for ( let gearLvl = 1; gearLvl < char.gear; gearLvl++ ) {
+      // crewRating += crTables.gearPieceCR[ gearLvl ] * 6; // add CR from complete gear levels
+    // }
+    crewRating += crTables.gearLevelCR[ char.gear ];
     crewRating += (crTables.gearPieceCR[ char.gear ] * char.equipped.length || 0); // add CR from currently equipped gear
     crewRating = char.skills.reduce( (cr, skill) => cr + getSkillCrewRating(skill), crewRating); // add CR from ability levels
     crewRating = char.mods.reduce( (cr, mod) => cr + crTables.modRarityLevelCR[ mod.pips ][ mod.level ], crewRating); // add CR from mods
@@ -172,6 +174,18 @@ function getCrewRating(crew) {
 function getSkillCrewRating(skill) {
   // Crew Rating for GP purposes depends on skill type (i.e. contract/hardware/etc.), but for stats it apparently doesn't.
   return crTables.abilityLevelCR[ skill.tier ];
+}
+
+function getCrewlessCrewRating(ship) {
+  // temporarily uses hard-coded multipliers, as the true in-game formula remains a mystery.
+  // but these values have experimentally been found accurate for the first 3 crewless ships:
+  //     (Vulture Droid, Hyena Bomber, and BTL-B Y-wing)
+  return floor( crTables.crewRarityCR[ ship.rarity ] + 3.5*crTables.unitLevelCR[ ship.level ] + getCrewlessSkillsCrewRating( ship.skills ), 0);
+}
+function getCrewlessSkillsCrewRating(skills) {
+  return skills.reduce( (cr, skill) => {
+    cr += ((skill.id.substring(0,8) == "hardware") ? 0.696 : 2.46) * crTables.abilityLevelCR[ skill.tier ];
+  }, 0);
 }
 
 /* Return object structure:
