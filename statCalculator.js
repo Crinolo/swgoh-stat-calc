@@ -183,6 +183,7 @@ function getCrewlessCrewRating(ship) {
   return floor( crTables.crewRarityCR[ ship.rarity ] + 3.5*crTables.unitLevelCR[ ship.level ] + getCrewlessSkillsCrewRating( ship.skills ), 0);
 }
 function getCrewlessSkillsCrewRating(skills) {
+  console.log(`Received Crewless Ship skills of: ${JSON.stringify(skills)}`);
   return skills.reduce( (cr, skill) => {
     cr += ((skill.id.substring(0,8) == "hardware") ? 0.696 : 2.46) * crTables.abilityLevelCR[ skill.tier ];
   }, 0);
