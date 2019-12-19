@@ -180,10 +180,11 @@ function getCrewlessCrewRating(ship) {
   // temporarily uses hard-coded multipliers, as the true in-game formula remains a mystery.
   // but these values have experimentally been found accurate for the first 3 crewless ships:
   //     (Vulture Droid, Hyena Bomber, and BTL-B Y-wing)
-  return floor( crTables.crewRarityCR[ ship.rarity ] + 3.5*crTables.unitLevelCR[ ship.level ] + getCrewlessSkillsCrewRating( ship.skills ), 0);
+  let cr = floor( crTables.crewRarityCR[ ship.rarity ] + 3.5*crTables.unitLevelCR[ ship.level ] + getCrewlessSkillsCrewRating( ship.skills ), 0);
+  console.log(`Calculated Crew Rating of ${ship.defId} to be ${cr}`);
+  return cr;
 }
 function getCrewlessSkillsCrewRating(skills) {
-  console.log(`Received Crewless Ship skills of: ${JSON.stringify(skills)}`);
   return skills.reduce( (cr, skill) => {
     cr += ((skill.id.substring(0,8) == "hardware") ? 0.696 : 2.46) * crTables.abilityLevelCR[ skill.tier ];
   }, 0);
