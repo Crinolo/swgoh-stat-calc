@@ -1,6 +1,6 @@
 {
   "name": "swgoh-stat-calc",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Stat Calculator for Star Wars: Galaxy of Heroes using data from swgoh.help's API",
   "main": "statCalculator.js",
   "scripts": {
