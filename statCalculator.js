@@ -2,6 +2,7 @@ let unitData,  // global variables containing properly formatted game data.
     modSetData,
     gearData,
     crTables,
+    gpTables,
     relicData;
 
 module.exports = {
@@ -10,6 +11,7 @@ module.exports = {
     gearData = gameData.gearData;
     modSetData = gameData.modSetData;
     crTables = gameData.crTables;
+    gpTables = gameData.gpTables;
     relicData = gameData.relicData;
   },
   calcCharStats: calcCharStats,
@@ -41,11 +43,14 @@ function calcRosterStats(units, options = {}) {
       } else { // is character
         crew[ unit.defId ] = unit; // add to crew list to find quickly for ships
         unit.stats = calcCharStats(unit, options);
+        if (options.calcGP) unit.gp = calcCharGP( unit );
       }
     });
     // get ship stats
     ships.forEach( ship => {
-      ship.stats = calcShipStats(ship, unitData[ship.defId].crew.map(id => crew[id]), options);
+      let crw = unitData[ship.defId].crew.map(id => crew[id])
+      ship.stats = calcShipStats(ship, crw, options);
+      if (options.calcGP) ship.gp = calcShipGP(ship, crw);
     });
     count += units.length;
   } else { // units *should* be formated like /units or /roster
@@ -180,7 +185,7 @@ function getCrewlessCrewRating(ship) {
   // temporarily uses hard-coded multipliers, as the true in-game formula remains a mystery.
   // but these values have experimentally been found accurate for the first 3 crewless ships:
   //     (Vulture Droid, Hyena Bomber, and BTL-B Y-wing)
-  return cr = floor( crTables.crewRarityCR[ ship.rarity ] + 3.5*crTables.unitLevelCR[ ship.level ] + getCrewlessSkillsCrewRating( ship.skills ), 0);
+  return cr = floor( crTables.crewRarityCR[ ship.rarity ] + 3.5*crTables.unitLevelCR[ ship.level ] + getCrewlessSkillsCrewRating( ship.skills ) );
 }
 function getCrewlessSkillsCrewRating(skills) {
   return skills.reduce( (cr, skill) => {
@@ -494,6 +499,75 @@ function renameStats(stats, options) {
   return stats;
 }
 
+
+
+
+
+
+// *****************************
+// ****** GP Calculations ******
+// *****************************
+
+function calcCharGP(char) {
+  let gp = gpTables.unitLevelGP[ char.level ];
+  gp += gpTables.unitRarityGP[ char.rarity ];
+  gp += gpTables.gearLevelGP[ char.gear ];
+  // Game tables for current gear include the possibility of differect GP per slot.
+  // Currently, all values are identical across each gear level, so a simpler method is possible.
+  // But that could change at any time.
+  gp = char.equipped.reduce( (power, piece) => power + gpTables.gearPieceGP[ char.gear ][ piece.slot ], gp);
+  gp = char.skills.reduce( (power, skill) => power + getSkillGP(char.defId, skill), gp);
+  gp = char.mods.reduce( (power, mod) => power + gpTables.modRarityLevelTierGP[ mod.pips ][ mod.level][ mod.tier ], gp);
+  if (char.relic && char.relic.currentTier > 2) {
+    gp += gpTables.relicTierGP[ char.relic.currentTier ];
+    gp += char.level * gpTables.relicTierLevelFactor[ char.relic.currentTier ];
+  }
+  return floor( gp*1.5 );
+}
+function getSkillGP(id, skill) {
+  let oTag = unitData[ id ].skills.find( s => s.id == skill.id ).powerOverrideTags[ skill.tier ];
+  if (oTag)
+    return gpTables.abilitySpecialGP[ oTag ];
+  else
+    return gpTables.abilityLevelGP[ skill.tier ] || 0;
+}
+function calcShipGP(ship, crew) {
+  // ensure crew is the correct crew
+  if (crew.length != unitData[ship.defId].crew.length)
+    throw new Error(`Incorrect number of crew members for ship ${ship.defId}.`);
+  crew.forEach( char => {
+    if ( !unitData[ship.defId].crew.includes(char.defId) )
+      throw new Error(`Unit ${char.defId} is not in ${ship.defId}'s crew.`);
+  });
+  
+  let gp;
+  
+  if (crew.length == 0) { // crewless calculations
+    let gps = getCrewlessSkillsGP( ship.defId, ship.skills );
+    gps.level = gpTables.unitLevelGP[ ship.level ];
+    gp = ( gps.level*3.5 + gps.ability*5.74 + gps.reinforcement*1.61 )*gpTables.shipRarityFactor[ ship.rarity ];
+    gp += gps.level + gps.ability + gps.reinforcement;
+  } else { // normal ship calculations
+    gp = crew.reduce( (power, c) => power + c.gp, 0);
+    gp *= gpTables.shipRarityFactor[ ship.rarity ] * gpTables.crewSizeFactor[ crew.length ]; // multiply crewPower factors before adding other GP sources
+    gp += gpTables.unitLevelGP[ ship.level ];
+    gp = ship.skills.reduce( (power, skill) => power + getSkillGP(ship.defId, skill), gp);
+  }
+  return floor( gp*1.5 );
+}
+function getCrewlessSkillsGP(id, skills) {
+  let a = 0,
+      r = 0;
+  skills.forEach( skill => {
+    let oTag = unitData[ id ].skills.find( s => s.id == skill.id ).powerOverrideTags[ skill.tier ];
+    if (oTag && oTag.substring(0,13) == 'reinforcement')
+      r += gpTables.abilitySpecialGP[ oTag ];
+    else
+      a += oTag ? gpTables.abilitySpecialGP[ oTag ] : gpTables.abilityLevelGP[ skill.tier ];
+  });
+  
+  return {ability: a, reinforcement: r};
+}
 
 
 
