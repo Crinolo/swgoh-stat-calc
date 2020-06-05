@@ -3,6 +3,8 @@
 Calculates unit stats for EA's Star Wars: Galaxy of Heroes based on player data.
 Accepted data formats are those found in [swgoh.help's API](http://api.swgoh.help) endpoints, specifically the 'player.roster' object from their `/player` endpoint.
 
+One additional data format is supported as well -- referred to as 'raw' in this documentation, it's a more 'pure' format based on the objects directly returned by the game's servers.
+
 ## Setup ##
 
 ### Node.js ###
@@ -28,6 +30,14 @@ const statCalculator = require('./statCalculator.js');
 
 Examples below make use of the [api-swgoh-help](https://github.com/r3volved/api-swgoh-help/tree/node) package (loaded into variable `swapi`) to collect the raw data.
 See it's documentation to learn more about how to use it to gather this data.
+
+* [.setGameData(gameData)](#setgamedatagamedata)
+* [.calcCharStats(char, options)](#calccharstatschar--options)
+* [.calcShipStats(ship, crew, options)](#calcshipstats)
+* [.calcRosterStats(roster, options)](#calcrosterstats)
+* [.calcPlayerStats(player, options)](#calcplayerstats)
+* [.calcCharGP(char, options)](#calcchargpchar-options)
+* [.calcShipGP(ship, crew, options)](#calcshipgpship-crew-options)
 
 ### .setGameData(gameData) ###
 
@@ -58,7 +68,7 @@ let gameData = await (await fetch('https://swgoh-stat-calc.glitch.me/gameData.js
 statCalculator.setGameData( gameData );
 ```
 
-### .calcCharStats(char [, flags, options] ) ###
+### .calcCharStats(char [, options] ) ###
 
 Calculates stats for a single character.
 
@@ -67,11 +77,8 @@ Calculates stats for a single character.
 `char` *Object*\
 The character object to calculate stats for.  Only a single character is allowed.  See `Object Formats` below for more info.
 
-`flags` *Object* `| Optional`\
-Optional stat format flags.  See `Flags` below for a list of accepted flags.
-
 `options` *Object* `| Optional`\
-Optional stat format instructions more complex than `flags`.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See `Options` below for a breakdown.
 
 #### Return Value ####
 
@@ -105,7 +112,7 @@ let char = player.roster.find( unit => unit.defId == "DARTHSION" );
 char.stats = statCalculator.calcCharStats( char );
 ```
 
-### .calcShipStats(ship, crew [, flags, options] ) ###
+### .calcShipStats(ship, crew [, options] ) ###
 
 Calculates stats for a single ship.
 
@@ -117,11 +124,8 @@ The ship object to calculate stats for.  Only a single character is allowed.  Se
 `crew` *Array*\
 Array of crew members belonging to the ship.  Each element is regular character object.  See `Object Formats` below for more info.
 
-`flags` *Object* `| Optional`\
-Optional stat format flags.  See `Flags` below for a list of accepted flags.
-
 `options` *Object* `| Optional`\
-Optional stat format instructions more complex than `flags`.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See `Options` below for a breakdown.
 
 #### Return Value ####
 
@@ -157,7 +161,7 @@ let crew = player.roster.find( unit => unit.defId == "BOSSK" );
 ship.stats = statCalculator.calcCharStats( ship, [crew] );
 ```
 
-### .calcRosterStats(units [, flags, options] ) ###
+### .calcRosterStats(units [, options] ) ###
 
 Calls `.calcCharStats()` or `.calcShipStats()` depending on each unit's `combatType` in a roster.
 
@@ -166,11 +170,8 @@ Calls `.calcCharStats()` or `.calcShipStats()` depending on each unit's `combatT
 `units` *Array*\
 Array of unit objects to calculate stats for.  Each element is regular unit object.  See `Object Formats` below for more info.
 
-`flags` *Object* `| Optional`\
-Optional stat format flags.  See `Flags` below for a list of accepted flags.
-
 `options` *Object* `| Optional`\
-Optional stat format instructions more complex than `flags`.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See `Options` below for a breakdown.
 
 #### Return Value ####
 
@@ -203,7 +204,7 @@ let player = (await swapi.fetchPlayer({
 let count = statCalculator.calcRosterStats( player.roster );
 ```
 
-### .calcPlayerStats(players [, flags, options] ) ###
+### .calcPlayerStats(players [, options] ) ###
 
 Calls `.calcRosterStats()` for each roster object in the player profile(s) submitted.
 
@@ -212,11 +213,8 @@ Calls `.calcRosterStats()` for each roster object in the player profile(s) submi
 `players` *Object* or *Array*\
 Full player profile(s).  Either a single player or an array of players is accepted.  See `Object Formats` below for more info.
 
-`flags` *Object* `| Optional`\
-Optional stat format flags.  See `Flags` below for a list of accepted flags.
-
 `options` *Object* `| Optional`\
-Optional stat format instructions more complex than `flags`.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See `Options` below for a breakdown.
 
 #### Return Value ####
 
@@ -248,6 +246,45 @@ let player = (await swapi.fetchPlayer({
 // get stats for full roster
 let count = statCalculator.calcPlayerStats( player );
 ```
+
+### .calcCharGP(char [, options] ) ###
+
+Calculates GP of the specified character.
+
+#### Parameters ####
+
+`char` *Object*\
+The character object to calculate stats for. Only a single character is allowed. See `Object Formats` below for more info.
+
+`options` *Object* `| Optional`\
+Optional stat format flags/instructions.  See `Options` below for a breakdown.
+
+#### Return Value ####
+
+The GP of submitted character.
+
+#### Example ####
+
+### .calcShipGP(ship, crew [, options] ) ###
+
+Calculates GP of the specified ship.
+
+#### Parameters ####
+
+`ship` *Object*\
+The ship object to calculate stats for.  Only a single character is allowed.  See `Object Formats` below for more info.
+
+`crew` *Array*\
+Array of crew members belonging to the ship.  Each element is regular character object.  See `Object Formats` below for more info.
+
+`options` *Object* `| Optional`\
+Optional stat format flags/instructions.  See `Options` below for a breakdown.
+
+#### Return Value ####
+
+The GP of submitted ship.
+
+#### Example ####
 
 ## Options ##
 
@@ -388,13 +425,15 @@ Player profile object.  Contains a `.roster` property with an array of unit obje
       ... ],
       skills: [ // skill list only required for crew members when calculating ship stats
         {
-          tier: <Integer>
+          tier: <Integer>,
+          id: <String> // id only needed for GP calculations
         },
       ... ],
       mods: [ // can be skipped if using `withoutModCalc` flag for characters only
         {
           pips: <Integer>,
           set: <Integer>,
+          tier: <Integer>, // tier only needed for GP calculations
           level: <Integer>,
           primaryStat: {
             unitStat: <Integer>,
@@ -458,9 +497,76 @@ Relic levels are not available in this format, so stats granted by relics will n
 **Note:** [swgoh.help's](http://api.swgoh.help) `/roster` endpoint is an array of these objects.
 While that array is not directly accepted, each element in the array is a "Units" style object that is accepted as stated above.
 
+### "*Raw*" format -- direct from game, not swgoh.help ###
+
+Player profile object.  Contains a `.rosterUnit` property with an array of unit objects.
+
+**Full profile:**
+```js
+{
+  rosterUnit: [
+    {
+      definitionId: <String>,
+      currentRarity: <Integer>,
+      level: <Integer>,
+      currentTier: <Integer>,
+      equipment: [
+        {
+          equipmentId: <String>
+        },
+      ... ],
+      skill: [ // skill list only required for crew members when calculating ship stats
+        {
+          tier: <Integer>,
+          id: <String> // id only needed for GP calculations
+        },
+      ... ],
+      equippedStatMod: [ // can be skipped if using `withoutModCalc` flag for characters only
+        {
+          definitionId: <String>
+          level: <Integer>,
+          tier: <Integer>, // only needed for GP calculations
+          primaryStat: {
+            stat: {
+              unitStat: <Integer>,
+              unscaledDecimalValue: <Integer>
+            }
+          },
+          secondaryStat: [
+            {
+              stat: {
+                unitStatId: <Integer>,
+                unscaledDecimalValue: <Integer>
+              }
+            },
+          ... ]
+        }
+      ... ],
+      relic: {
+        currentTier: <Integer>
+      }
+    },
+  ... ]
+}
+```
+Used directly by `.calcPlayerStats()`, which also accepts an array of these objects.
+
+**player.rosterUnit**\
+Used directly by `.calcRosterStats()`
+
+**Unit**  *single element of* `player.roster`\
+Used directly by `.calcCharStats()` and `.calcShipStats()` (for both the ship and the crew members).
+
 # Changelog #
 
+* Version 1.1.0
+    * Added support for a 'raw' format -- in line with the roster format sent directly by the game, not from swgoh.help.
+    * Exposed the endpoints for calculating GP so they can be called directly.
+* Version 1.0.8
+    * A number of bug fixes
+    * Support for Relic stats (not available in .help's /units endpoint)
+    * Added GP calculations, available only with a `calcGP` flag using `.calcRosterStats()` (and thus also `.calcPlayerStats()`)
 * Version 1.0.1
-  * 'Minor Text Fixes' to this README
+    * 'Minor Text Fixes' to this README
 * Version 1.0.0
-  * Initial Release
+    * Initial Release

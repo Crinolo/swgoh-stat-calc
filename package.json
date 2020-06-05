@@ -4,7 +4,7 @@
   "description": "Stat Calculator for Star Wars: Galaxy of Heroes using data from swgoh.help's API",
   "main": "statCalculator.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage"
   },
   "keywords": [
     "swgoh",
@@ -21,5 +21,9 @@
   "bugs": {
     "url": "https://github.com/Crinolo/swgoh-stat-calc/issues"
   },
-  "homepage": "https://github.com/Crinolo/swgoh-stat-calc#readme"
+  "homepage": "https://github.com/Crinolo/swgoh-stat-calc#readme",
+  "devDependencies": {
+    "jest": "^26.0.1",
+    "node-fetch": "^2.6.0"
+  }
 }
