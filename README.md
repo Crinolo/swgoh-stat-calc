@@ -497,7 +497,7 @@ Relic levels are not available in this format, so stats granted by relics will n
 **Note:** [swgoh.help's](http://api.swgoh.help) `/roster` endpoint is an array of these objects.
 While that array is not directly accepted, each element in the array is a "Units" style object that is accepted as stated above.
 
-### "*Raw*" format -- direct from game, not swgoh.help ###
+### "*Raw*" format -- direct from game ###
 
 Player profile object.  Contains a `.rosterUnit` property with an array of unit objects.
 
