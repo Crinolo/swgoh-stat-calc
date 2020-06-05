@@ -158,7 +158,7 @@ let ship = player.roster.find( unit => unit.defId == "HOUNDSTOOTH" );
 // pulls Bossk out of roster for example crew
 let crew = player.roster.find( unit => unit.defId == "BOSSK" );
 // get stats
-ship.stats = statCalculator.calcCharStats( ship, [crew] );
+ship.stats = statCalculator.calcShipStats( ship, [crew] );
 ```
 
 ### .calcRosterStats(units [, options] ) ###
@@ -265,6 +265,32 @@ The GP of submitted character.
 
 #### Example ####
 
+```js
+// get Player roster from api.swgoh.help
+let player = (await swapi.fetchPlayer({
+  allycode: 231686213,
+  language: "ENG_US",
+  project: {
+    roster: {
+      defId: 1,
+      nameKey: 1,
+      rarity: 1,
+      level: 1,
+      gear: 1,
+      equipped: 1,
+      combatType: 1,
+      skills: 1,
+      mods: 1,
+      relic: 1
+    }
+  }
+}) ).result[0];
+// pull Darth Sion out of roster as an example
+let char = player.roster.find( unit => unit.defId == "DARTHSION" );
+// get GP
+char.gp = statCalculator.calcCharGP( char );
+```
+
 ### .calcShipGP(ship, crew [, options] ) ###
 
 Calculates GP of the specified ship.
@@ -286,6 +312,34 @@ The GP of submitted ship.
 
 #### Example ####
 
+```js
+// get Player roster from api.swgoh.help
+let player = (await swapi.fetchPlayer({
+  allycode: 231686213,
+  language: "ENG_US",
+  project: {
+    roster: {
+      defId: 1,
+      nameKey: 1,
+      rarity: 1,
+      level: 1,
+      gear: 1,
+      equipped: 1,
+      combatType: 1,
+      skills: 1,
+      mods: 1,
+      relic: 1
+    }
+  }
+}) ).result[0];
+// pulls Hound's Tooth out of roster as an example
+let ship = player.roster.find( unit => unit.defId == "HOUNDSTOOTH" );
+// pulls Bossk out of roster for example crew
+let crew = player.roster.find( unit => unit.defId == "BOSSK" );
+// get stats
+ship.gp = statCalculator.calcShipGP( ship, [crew] );
+```
+
 ## Options ##
 
 The `options` parameter of all calculation methods is an object that can contain any of the following properties.
@@ -298,6 +352,10 @@ The *Default* explanations below are what is used when the related flag(s) are n
 ```
 
 ### Calculation control ###
+
+`calcGP: true`\
+Runs GP calculations along with stat calculations, and stores it's value in the unit's `.gp` property.\
+Only evaluated by the `.calcRosterStats()` and `.calcPlayerStats()` method calls, when not using the `/units` style objects.
 
 `withoutModCalc: true`\
 Speeds up character calculations by ignoring stats from mods.\
