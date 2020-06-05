@@ -33,11 +33,11 @@ See it's documentation to learn more about how to use it to gather this data.
 
 * [.setGameData(gameData)](#setgamedatagamedata)
 * [.calcCharStats(char, options)](#calccharstatschar--options-)
-* [.calcShipStats(ship, crew, options)](#calcshipstats)
-* [.calcRosterStats(roster, options)](#calcrosterstats)
-* [.calcPlayerStats(player, options)](#calcplayerstats)
-* [.calcCharGP(char, options)](#calcchargpchar-options)
-* [.calcShipGP(ship, crew, options)](#calcshipgpship-crew-options)
+* [.calcShipStats(ship, crew, options)](#calcshipstatsship-crew--options-)
+* [.calcRosterStats(roster, options)](#calcrosterstatsunits--options-)
+* [.calcPlayerStats(player, options)](#calcplayerstatsplayers--options-)
+* [.calcCharGP(char, options)](#calcchargpchar--options-)
+* [.calcShipGP(ship, crew, options)](#calcshipgpship-crew--options-)
 
 ### .setGameData(gameData) ###
 
@@ -75,10 +75,10 @@ Calculates stats for a single character.
 #### Parameters ####
 
 `char` *Object*\
-The character object to calculate stats for.  Only a single character is allowed.  See `Object Formats` below for more info.
+The character object to calculate stats for.  Only a single character is allowed.  See [`Object Formats`](#object-formats) below for more info.
 
 `options` *Object* `| Optional`\
-Optional stat format flags/instructions.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See [`Options`](#options) below for a breakdown.
 
 #### Return Value ####
 
@@ -119,13 +119,13 @@ Calculates stats for a single ship.
 #### Parameters ####
 
 `ship` *Object*\
-The ship object to calculate stats for.  Only a single character is allowed.  See `Object Formats` below for more info.
+The ship object to calculate stats for.  Only a single character is allowed.  See [`Object Formats`](#object-formats) below for more info.
 
 `crew` *Array*\
-Array of crew members belonging to the ship.  Each element is regular character object.  See `Object Formats` below for more info.
+Array of crew members belonging to the ship.  Each element is regular character object.  See [`Object Formats`](#object-formats) below for more info.
 
 `options` *Object* `| Optional`\
-Optional stat format flags/instructions.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See [`Options`](#options) below for a breakdown.
 
 #### Return Value ####
 
@@ -168,10 +168,10 @@ Calls `.calcCharStats()` or `.calcShipStats()` depending on each unit's `combatT
 #### Parameters ####
 
 `units` *Array*\
-Array of unit objects to calculate stats for.  Each element is regular unit object.  See `Object Formats` below for more info.
+Array of unit objects to calculate stats for.  Each element is regular unit object.  See [`Object Formats`](#object-formats) below for more info.
 
 `options` *Object* `| Optional`\
-Optional stat format flags/instructions.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See [`Options`](#options) below for a breakdown.
 
 #### Return Value ####
 
@@ -211,10 +211,10 @@ Calls `.calcRosterStats()` for each roster object in the player profile(s) submi
 #### Parameters ####
 
 `players` *Object* or *Array*\
-Full player profile(s).  Either a single player or an array of players is accepted.  See `Object Formats` below for more info.
+Full player profile(s).  Either a single player or an array of players is accepted.  See [`Object Formats`](#object-formats) below for more info.
 
 `options` *Object* `| Optional`\
-Optional stat format flags/instructions.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See [`Options`](#options) below for a breakdown.
 
 #### Return Value ####
 
@@ -254,10 +254,10 @@ Calculates GP of the specified character.
 #### Parameters ####
 
 `char` *Object*\
-The character object to calculate stats for. Only a single character is allowed. See `Object Formats` below for more info.
+The character object to calculate stats for. Only a single character is allowed. See [`Object Formats`](#object-formats) below for more info.
 
 `options` *Object* `| Optional`\
-Optional stat format flags/instructions.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See [`Options`](#options) below for a breakdown.
 
 #### Return Value ####
 
@@ -272,13 +272,13 @@ Calculates GP of the specified ship.
 #### Parameters ####
 
 `ship` *Object*\
-The ship object to calculate stats for.  Only a single character is allowed.  See `Object Formats` below for more info.
+The ship object to calculate stats for.  Only a single character is allowed.  See [`Object Formats`](#object-formats) below for more info.
 
 `crew` *Array*\
-Array of crew members belonging to the ship.  Each element is regular character object.  See `Object Formats` below for more info.
+Array of crew members belonging to the ship.  Each element is regular character object.  See [`Object Formats`](#object-formats) below for more info.
 
 `options` *Object* `| Optional`\
-Optional stat format flags/instructions.  See `Options` below for a breakdown.
+Optional stat format flags/instructions.  See [`Options`](#options) below for a breakdown.
 
 #### Return Value ####
 
@@ -560,7 +560,7 @@ Used directly by `.calcCharStats()` and `.calcShipStats()` (for both the ship an
 # Changelog #
 
 * Version 1.1.0
-    * Added support for a 'raw' format -- in line with the roster format sent directly by the game, not from swgoh.help.
+    * Added support for a 'raw' format -- in line with the roster format sent directly by the game, not from [swgoh.help](http://api.swgoh.help).
     * Exposed the endpoints for calculating GP so they can be called directly.
 * Version 1.0.8
     * A number of bug fixes
