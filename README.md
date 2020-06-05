@@ -32,7 +32,7 @@ Examples below make use of the [api-swgoh-help](https://github.com/r3volved/api-
 See it's documentation to learn more about how to use it to gather this data.
 
 * [.setGameData(gameData)](#setgamedatagamedata)
-* [.calcCharStats(char, options)](#calccharstatschar--options)
+* [.calcCharStats(char, options)](#calccharstatschar--options-)
 * [.calcShipStats(ship, crew, options)](#calcshipstats)
 * [.calcRosterStats(roster, options)](#calcrosterstats)
 * [.calcPlayerStats(player, options)](#calcplayerstats)
