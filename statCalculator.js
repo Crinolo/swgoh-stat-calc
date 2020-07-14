@@ -30,12 +30,12 @@ module.exports = {
   },
   calcCharGP: ( char, options = {} ) => {
     char = useValuesChar(char, options.useValues);
-    calcCharGP( char );
+    return calcCharGP( char );
   },
   calcShipGP: ( ship, crew, options = {} ) => {
     ({ship, crew} = useValuesShip(ship, crew, options.useValues));
     crew.forEach( c => c.gp = calcCharGP( c ) );
-    calcShipGP( ship, crew );
+    return calcShipGP( ship, crew );
   }
 }
 
