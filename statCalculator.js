@@ -84,7 +84,7 @@ function calcRosterStats(units, options = {}) {
       });
     });
   }
-  
+
   return count;
 }
 function calcCharStats(char, options = {}) {
@@ -94,17 +94,17 @@ function calcCharStats(char, options = {}) {
   if (!options.withoutModCalc) { stats.mods = calculateModStats(stats.base, char); }
   stats = formatStats(stats, char.level, options);
   stats = renameStats(stats, options);
-  
+
   return stats;
 }
 function calcShipStats(ship, crew, options = {}) {
   try {
     ({ship, crew} = useValuesShip(ship, crew, options.useValues));
     let stats = getShipRawStats(ship, crew);
-    stats = calculateBaseStats(stats, ship.level, ship.defId);    
+    stats = calculateBaseStats(stats, ship.level, ship.defId);
     stats = formatStats(stats, ship.level, options);
     stats = renameStats(stats, options);
-    
+
     return stats;
   } catch(e) {
     console.error(`Error on ship '${ship.defId}':\n${JSON.stringify(ship)}`);
@@ -181,13 +181,13 @@ function getCrewRating(crew) {
      // add CR from mods
     if (char.mods) crewRating = char.mods.reduce( (cr, mod) => cr + crTables.modRarityLevelCR[ mod.pips ][ mod.level ], crewRating);
     else if (char.equippedStatMod) crewRating = char.equippedStatMod.reduce( (cr, mod) => cr + crTables.modRarityLevelCR[ +mod.definitionId[1] ][ mod.level ], crewRating);
-    
+
     // add CR from relics
     if (char.relic && char.relic.currentTier > 2) {
       crewRating += crTables.relicTierCR[ char.relic.currentTier ];
       crewRating += char.level * crTables.relicTierLevelFactor[ char.relic.currentTier ];
     }
-    
+
     return crewRating;
   }, 0);
   return totalCR;
@@ -242,14 +242,14 @@ function calculateBaseStats(stats, level, baseID) {
   stats.base[15] = (stats.base[15] || 0);               // Sp. Crit
   stats.base[16] = (stats.base[16] || 0) + (150 * 1e6); // +150% Crit Damage
   stats.base[18] = (stats.base[18] || 0) + (15 * 1e6);  // +15% Tenacity
-  
+
   return stats
 }
 
 
 /* Return object structure:
   { statID: statValue, ...}
-  
+
   Input 'char.mods' structures (.help formats):
     /units format:
   [ {
@@ -278,7 +278,7 @@ function calculateBaseStats(stats, level, baseID) {
     },
     // missing mods don't exist in list
     ... ]
-  
+
   Input 'char.equippedStatMod' structure (raw format)
   [ {
       definitionId: string, // three digits, first is set ID
@@ -297,14 +297,14 @@ function calculateBaseStats(stats, level, baseID) {
 function calculateModStats(baseStats, char) {
   // return empty object if no mods
   if ( !char.mods && !char.equippedStatMod ) return {};
-    
+
   // calculate raw totals on mods
   const setBonuses = {};
   const rawModStats = {};
   if (char.mods) {
     char.mods.forEach(mod => {
       if (!mod.set) { return; } // ignore if empty mod (/units format only)
-      
+
       // add to set bonuses counters (same for both formats)
       if (setBonuses[ mod.set ]) {
         // set bonus already found, increment
@@ -314,7 +314,7 @@ function calculateModStats(baseStats, char) {
         // new set bonus, create object
         setBonuses[ mod.set ] = { count: 1, maxLevel: mod.level == 15 ? 1 : 0 };
       }
-      
+
       // add Primary/Secondary stats to data
       if (mod.stat) {
         // using /units format
@@ -330,7 +330,7 @@ function calculateModStats(baseStats, char) {
           stat = mod.secondaryStat[i];
         } while ( i++ < mod.secondaryStat.length );
       }
-      
+
       function scaleStatValue(statID, value) {
         // convert stat value from displayed value to "unscaled" value used in calculations
         switch (statID) {
@@ -358,7 +358,7 @@ function calculateModStats(baseStats, char) {
         // new set bonus, create object
         setBonuses[ +mod.definitionId[0] ] = { count: 1, maxLevel: mod.level == 15 ? 1 : 0 };
       }
-      
+
       // add Primary/Secondary stats to data
       let stat = mod.primaryStat.stat, i = 0;
       do {
@@ -370,7 +370,7 @@ function calculateModStats(baseStats, char) {
     // return empty object if no mods
     return {};
   }
-  
+
   // add stats given by set bonuses
   for (var setID in setBonuses) {
     const setDef = modSetData[setID];
@@ -378,7 +378,7 @@ function calculateModStats(baseStats, char) {
     const multiplier = ~~(count / setDef.count) + ~~(maxCount / setDef.count);
     rawModStats[ setDef.id ] = (rawModStats[ setDef.id ] || 0) + (setDef.value * multiplier);
   }
-  
+
   // calcuate actual stat bonuses from mods
   const modStats = {};
   for (var statID in rawModStats) {
@@ -422,7 +422,7 @@ function calculateModStats(baseStats, char) {
         modStats[ statID ] = (modStats[ statID ] || 0) + value;
     }
   }
-  
+
   return modStats;
 }
 
@@ -435,14 +435,14 @@ function calculateModStats(baseStats, char) {
 function formatStats(stats, level, options) {
   // value/scaling flags
   let scale = 1; // also useful in some Stat Format calculations below
-  
+
   if (options.scaled) { scale = 1e-4; }
   else if (!options.unscaled) { scale = 1e-8; }
-  
+
   if (stats.mods) {
     for (var statID in stats.mods) stats.mods[statID] = Math.round( stats.mods[statID] );
   }
-  
+
   if (scale != 1) {
     for (var statID in stats.base) stats.base[statID] *= scale;
     for (var statID in stats.gear) stats.gear[statID] *= scale;
@@ -452,7 +452,7 @@ function formatStats(stats, level, options) {
       for (var statID in stats.mods) stats.mods[statID] *= scale;
     }
   }
-  
+
   if (options.percentVals || options.gameStyle) { // 'gameStyle' flag inherently includes 'percentVals'
     let vals;
     // convert Crit
@@ -470,7 +470,7 @@ function formatStats(stats, level, options) {
     // convert Crit Avoidance
     convertPercent(39, val => convertFlatCritAvoidToPercent( val, scale * 1e8 ) ); // Physical Crit Avoidance
     convertPercent(40, val => convertFlatCritAvoidToPercent( val, scale * 1e8 ) ); // Special Crit Avoidance
-    
+
     // calls 'convertFunc' for all stat values of 'statID' in stats, and replaces those values with the % granted by that stat type
     //   i.e. mods = convertFunc(base + gear + mods) - convertFunc(base + gear)
     //     or for ships: crew = convertFunc(base + crew) - convertFunc(crew)
@@ -492,7 +492,7 @@ function formatStats(stats, level, options) {
       }
     }
   }
-  
+
   if (options.gameStyle) {
     let gsStats = { final:{} };
     // get list of all stat IDs used in base
@@ -520,19 +520,19 @@ function formatStats(stats, level, options) {
         gsStats.final[flatStatID] = gsStats.final[flatStatID] || 0; // ensure stat already exists
         gsStats.final[flatStatID] += (stats.base[statID] || 0) + (stats.gear[statID] || 0) + (stats.mods && stats.mods[statID] ? stats.mods[statID] : 0);
       });
-      
+
     } else { // is Ship
       Object.keys(stats.crew).forEach(addStats); // add stats from crew to list
       gsStats.crew = stats.crew; // keep crew stats untouched
-      
+
       statList.forEach( statID => {
         gsStats.final[statID] = (stats.base[statID] || 0) + (stats.crew[statID] || 0);
       });
     }
-    
+
     stats = gsStats;
   }
-  
+
   return stats;
 }
 
@@ -577,10 +577,10 @@ function calcCharGP(char) {
   // But that could change at any time.
   gp = char.equipped.reduce( (power, piece) => power + gpTables.gearPieceGP[ char.gear ][ piece.slot ], gp);
   gp = char.skills.reduce( (power, skill) => power + getSkillGP(char.defId, skill), gp);
-  if (char.purchacedAbilityId) gp += char.purchacedAbilityId.length * gpTables.abilitySpecialGP.ultimate;
+  if (char.purchasedAbilityId) gp += char.purchasedAbilityId.length * gpTables.abilitySpecialGP.ultimate;
   if (char.mods) gp = char.mods.reduce( (power, mod) => power + gpTables.modRarityLevelTierGP[ mod.pips ][ mod.level ][ mod.tier ], gp);
   else if (char.equippedStatMod) gp = char.equippedStatMod.reduce( (power, mod) => power + gpTables.modRarityLevelTierGP[ +mod.definitionId[1] ][ mod.level ][ mod.tier ], gp)
-  
+
   if (char.relic && char.relic.currentTier > 2) {
     gp += gpTables.relicTierGP[ char.relic.currentTier ];
     gp += char.level * gpTables.relicTierLevelFactor[ char.relic.currentTier ];
@@ -602,9 +602,9 @@ function calcShipGP(ship, crew = []) {
     if ( !unitData[ship.defId].crew.includes(char.defId) )
       throw new Error(`Unit ${char.defId} is not in ${ship.defId}'s crew.`);
   });
-  
+
   let gp;
-  
+
   if (crew.length == 0) { // crewless calculations
     let gps = getCrewlessSkillsGP( ship.defId, ship.skills );
     gps.level = gpTables.unitLevelGP[ ship.level ];
@@ -628,7 +628,7 @@ function getCrewlessSkillsGP(id, skills) {
     else
       a += oTag ? gpTables.abilitySpecialGP[ oTag ] : gpTables.abilityLevelGP[ skill.tier ];
   });
-  
+
   return {ability: a, reinforcement: r};
 }
 
@@ -689,7 +689,7 @@ function useValuesChar(char, useValues) {
     skills: char.skill.map( skill => { return { id: skill.id, tier: skill.tier + 2 }; })
   };
   if (!useValues) return char;
-  
+
   let unit = {
     defId: char.defId,
     rarity: useValues.char.rarity || char.rarity,
@@ -700,7 +700,7 @@ function useValuesChar(char, useValues) {
     equippedStatMod: char.equippedStatMod,
     relic: useValues.char.relic ? {currentTier: useValues.char.relic } : char.relic
   };
-  
+
   if (useValues.char.equipped == "all") {
     unit.equipped = [];
     unitData[ unit.defId ].gearLvl[ unit.gear ].gear.forEach( gearID => {
@@ -714,7 +714,7 @@ function useValuesChar(char, useValues) {
       return unitData[ unit.defId ].gearLvl[ unit.gear].gear[ +slot - 1 ];
     });
   }
-  
+
   return unit;
 }
 
@@ -741,14 +741,14 @@ function useValuesShip(ship, crew, useValues) {
     });
   }
   if (!useValues) return {ship: ship, crew: crew};
-  
+
   ship = {
     defId: ship.defId,
     rarity: useValues.ship.rarity || ship.rarity,
     level: useValues.ship.level || ship.level,
     skills: setSkills(ship.defId, useValues.ship.skills || ship.skills)
   }
-  
+
   let chars = unitData[ ship.defId ].crew.map( charID => {
     let char = crew.find( cmem => { return cmem.defId == charID} ); // extract defaults from submitted crew
     char = {
@@ -761,7 +761,7 @@ function useValuesShip(ship, crew, useValues) {
       mods: char.mods,
       relic: useValues.crew.relic ? {currentTier: useValues.crew.relic } : char.relic
     };
-    
+
     if (useValues.crew.equipped == "all") {
       char.equipped = [];
       unitData[ charID ].gearLvl[ char.gear ].gear.forEach( gearID => {
@@ -779,19 +779,19 @@ function useValuesShip(ship, crew, useValues) {
       for (let i=0; i<useValues.crew.equipped; i++)
         char.equipped.push({});
     }
-    
+
     if (useValues.crew.modRarity || useValues.crew.modLevel) {
       char.mods = [];
       for (let i=0; i<6; i++) {
         char.mods.push({ pips: useValues.crew.modRarity || 6, level: useValues.crew.modLevel || 15 });
       }
     }
-    
+
     return char;
   });
-  
+
   return {ship: ship, crew: chars};
-  
+
   function setSkills( unitID, val ) {
     if (val == 'max')
       return unitData[ unitID ].skills.map(skill => { return {id: skill.id, tier: skill.maxTier}; });
