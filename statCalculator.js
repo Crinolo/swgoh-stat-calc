@@ -48,6 +48,7 @@ function calcRosterStats(units, options = {}) {
     // get character stats
     units.forEach( unit => {
       let defID = unit.defId || unit.definitionId.split(':')[0];
+      if (!unit || !unitData[defID]) return;
       if (unitData[ defID ].combatType == 2) { // is ship
         ships.push( unit );
       } else { // is character
@@ -59,6 +60,7 @@ function calcRosterStats(units, options = {}) {
     // get ship stats
     ships.forEach( ship => {
       let defID = ship.defId || ship.definitionId.split(':')[0];
+      if (!ship || !unitData[defID]) return;
       let crw = unitData[ defID ].crew.map(id => crew[id])
       ship.stats = calcShipStats(ship, crw, options);
       if (options.calcGP) {
