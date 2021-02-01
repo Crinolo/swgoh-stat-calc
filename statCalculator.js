@@ -738,7 +738,8 @@ function useValuesShip(ship, crew, useValues) {
         equipped: c.equipment,
         equippedStatMod: c.equippedStatMod,
         relic: c.relic,
-        skills: c.skill.map( skill => { return { id: skill.id, tier: skill.tier + 2 }; })
+        skills: c.skill.map( skill => { return { id: skill.id, tier: skill.tier + 2 }; }),
+        gp: c.gp
       };
     });
   }
