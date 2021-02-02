@@ -357,6 +357,9 @@ The *Default* explanations below are what is used when the related flag(s) are n
 Runs GP calculations along with stat calculations, and stores it's value in the unit's `.gp` property.\
 Only evaluated by the `.calcRosterStats()` and `.calcPlayerStats()` method calls, when not using the `/units` style objects.
 
+`onlyGP: true`\
+Implies calcGP and only applicable in the same API calls as calcGP. Skips all stat calculations and only calculates the GP.
+
 `withoutModCalc: true`\
 Speeds up character calculations by ignoring stats from mods.\
 *Default* - calculate mods stats for all characters that include them.
