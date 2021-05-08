@@ -41,6 +41,7 @@ module.exports = {
 
 
 function calcRosterStats(units, options = {}) {
+  const calcGP = (options.calcGP || options.onlyGP);
   let count = 0;
   if (units.constructor === Array) { // units *should* be formatted like /player.roster
     let ships = [],
@@ -53,8 +54,8 @@ function calcRosterStats(units, options = {}) {
         ships.push( unit );
       } else { // is character
         crew[ defID ] = unit; // add to crew list to find quickly for ships
-        unit.stats = calcCharStats(unit, options);
-        if (options.calcGP) unit.gp = calcCharGP( useValuesChar(unit, options.useValues) );
+        if (!options.onlyGP) unit.stats = calcCharStats(unit, options);
+        if (calcGP) unit.gp = calcCharGP( useValuesChar(unit, options.useValues) );
       }
     });
     // get ship stats
@@ -62,8 +63,8 @@ function calcRosterStats(units, options = {}) {
       let defID = ship.defId || ship.definitionId.split(':')[0];
       if (!ship || !unitData[defID]) return;
       let crw = unitData[ defID ].crew.map(id => crew[id])
-      ship.stats = calcShipStats(ship, crw, options);
-      if (options.calcGP) {
+      if (!options.onlyGP) ship.stats = calcShipStats(ship, crw, options);
+      if (calcGP) {
         let {ship: s, crew: c} = useValuesShip(ship, crw, options.useValues);
         ship.gp = calcShipGP(s, c);
       }
@@ -738,7 +739,8 @@ function useValuesShip(ship, crew, useValues) {
         equipped: c.equipment,
         equippedStatMod: c.equippedStatMod,
         relic: c.relic,
-        skills: c.skill.map( skill => { return { id: skill.id, tier: skill.tier + 2 }; })
+        skills: c.skill.map( skill => { return { id: skill.id, tier: skill.tier + 2 }; }),
+        gp: c.gp
       };
     });
   }
